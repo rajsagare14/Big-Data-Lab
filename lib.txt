@@ -1,0 +1,235 @@
+
+
+____________________________________________________________________________________________________________
+
+Bloom Filter
+____________________________________________________________________________________________________________
+
+import mmh3
+from bitarray import bitarray
+
+class BloomFilter:
+    def __init__(self, size, num_hashes):
+        self.size = size
+        self.num_hashes = num_hashes
+        self.bit_array = bitarray(size)
+        self.bit_array.setall(0)
+
+    def add(self, item):
+        for seed in range(self.num_hashes):
+            index = mmh3.hash(item, seed) % self.size
+            self.bit_array[index] = True
+
+    def __contains__(self, item):
+        for seed in range(self.num_hashes):
+            index = mmh3.hash(item, seed) % self.size
+            if not self.bit_array[index]:
+                return False
+        return True
+
+# Example usage:
+if __name__ == "__main__":
+    filter_size = 20
+    num_hashes = 5
+    bloom_filter = BloomFilter(filter_size, num_hashes)
+
+    # Add elements to the filter
+    elements = ['apple', 'banana', 'cherry', 'date']
+    for element in elements:
+        bloom_filter.add(element)
+
+    # Check for existence of elements
+    print('Check for "apple" in the Bloom Filter:', 'apple' in bloom_filter)
+    print('Check for "grape" in the Bloom Filter:', 'grape' in bloom_filter)
+
+____________________________________________________________________________________________________________
+
+
+
+
+____________________________________________________________________________________________________________
+
+page ranking algorithm
+____________________________________________________________________________________________________________
+
+# Implementing PageRank Algorithm
+
+def calculate_pagerank(links, num_iterations=100, d=0.85):
+    # Initialize all page ranks to 1
+    page_ranks = {page: 1 for page in links.keys()}
+    num_pages = len(links)
+
+    # Iteratively calculate PageRank
+    for _ in range(num_iterations):
+        new_page_ranks = {}
+        for page in links:
+            new_rank = (1 - d) / num_pages
+            for link in links:
+                if page in links[link]:
+                    new_rank += d * (page_ranks[link] / len(links[link]))
+            new_page_ranks[page] = new_rank
+        page_ranks = new_page_ranks
+
+    return page_ranks
+
+# Example usage
+if __name__ == "__main__":
+    # Example links between pages
+    example_links = {
+        'PageA': ['PageB', 'PageC'],
+        'PageB': ['PageC'],
+        'PageC': ['PageA'],
+        'PageD': ['PageC']
+    }
+
+    # Calculate PageRank
+    pageranks = calculate_pagerank(example_links)
+
+    # Output the PageRank values
+    for page, rank in sorted(pageranks.items(), key=lambda x: x[1], reverse=True):
+        print(f"{page}: {rank}")
+
+
+____________________________________________________________________________________________________________
+
+
+
+
+
+
+____________________________________________________________________________________________________________
+
+Apriori Algorithm
+____________________________________________________________________________________________________________
+
+from itertools import chain, combinations
+
+
+def load_data():
+    return [
+        [1, 2, 3, 4],
+        [1, 2, 4],
+        [1, 2],
+        [2, 3, 4],
+        [2, 3],
+        [3, 4],
+    ]
+
+
+def get_itemsets(data):
+    return [frozenset([item]) for item in set(chain(*data))]
+
+
+def generate_candidates(itemsets, k):
+    return [i.union(j) for i in itemsets for j in itemsets if len(i.union(j)) == k]
+
+
+def prune_itemsets(itemsets, prev_itemsets):
+    return [i for i in itemsets if all(subset in prev_itemsets for subset in combinations(i, len(i) - 1))]
+
+
+def apriori(data, min_support):
+    itemsets = get_itemsets(data)
+    frequent_itemsets = []
+
+    k = 1
+    while itemsets:
+        support_counts = {i: sum(1 for t in data if i.issubset(t)) for i in itemsets}
+        frequent_itemsets += [i for i, s in support_counts.items() if s >= min_support]
+
+        k += 1
+        itemsets = generate_candidates(itemsets, k)
+        itemsets = prune_itemsets(itemsets, frequent_itemsets)
+
+    return frequent_itemsets
+
+
+if __name__ == "__main__":
+    data = load_data()
+    min_support = 2
+    result = apriori(data, min_support)
+
+    print("Example Dataset:")
+    [print(t) for t in data]
+
+    print("\nFrequent Itemsets:")
+    [print(i) for i in result]
+
+____________________________________________________________________________________________________________
+
+
+
+
+
+
+____________________________________________________________________________________________________________
+
+Word Count Problem
+____________________________________________________________________________________________________________
+
+def word_count(text):
+    words = text.split()
+    word_freq = {}
+
+    for word in words:
+        word = word.lower()  # Convert to lowercase to ensure case insensitivity
+        if word in word_freq:
+            word_freq[word] += 1
+        else:
+            word_freq[word] = 1
+
+    return word_freq
+
+
+def main():
+    text = input("Enter a sentence or paragraph: ")
+    word_frequency = word_count(text)
+
+    print("\nWord Count Result:")
+    for word, count in word_frequency.items():
+        print(f"'{word}' : {count}")
+
+
+if __name__ == "__main__":
+    main()
+
+____________________________________________________________________________________
+
+
+
+
+
+
+
+____________________________________________________________________________________________________________
+
+HDFS Commands
+____________________________________________________________________________________________________________
+
+Mkdir
+used to make a directory.
+
+Ls
+lists all the files in the directory
+
+touchz
+creates an empty file
+
+copyToLocalorget
+Copies files or folders from hdfs store to local file system
+
+Mv
+moves files within hdfs
+
+Rmr
+deletes a file from hdfs recursively.
+
+Du
+gives size of each file in hdfs
+
+____________________________________________________________________________________________________________
+
+
+
+
+
